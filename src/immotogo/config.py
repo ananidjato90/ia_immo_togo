@@ -21,8 +21,8 @@ class Settings(BaseSettings):
         default="INFO", description="Minimum log level for the application"
     )
 
-    postgres_dsn: str = Field(
-        default="postgresql+psycopg://immotogo:immotogo@localhost:5432/immotogo",
+    database_dsn: str = Field(
+        default="mysql+pymysql://immotogo:immotogo@localhost:3306/immotogo",
         description="SQLAlchemy compatible DSN for the ingestion store",
     )
     chroma_persist_directory: Path = Field(

@@ -18,26 +18,26 @@ Pipeline Retrieval-Augmented Generation (RAG) francophone, bâtie sur le modèle
 ## Architecture
 
 - **Collecte** : des collecteurs asynchrones (Scraping, via `httpx` + `selectolax`) ciblent les portails immobiliers listés (CoinAfrique, ImmoOz, extensible à d'autres sites). Les annonces sont normalisées avec des `Enum` (type de bien, transaction) et enrichies (surface, prix, localisation, etc.).
-- **Stockage** : PostgreSQL (ou toute base compatible SQLAlchemy) héberge les tables `listings` et `listing_chunks`. Les scripts `scripts/bootstrap_db.py` et `scripts/run_ingest.py` initialisent et alimentent la base.
+- **Stockage** : MySQL (ou toute base compatible SQLAlchemy) héberge les tables `listings` et `listing_chunks`. Les scripts `scripts/bootstrap_db.py` et `scripts/run_ingest.py` initialisent et alimentent la base.
 - **Vecteurs** : les textes sont encodés via `sentence-transformers/all-MiniLM-L6-v2` et stockés dans une base `Chroma` persistée localement (`.chroma/`).
 - **RAG** : `immotogo.pipeline.rag.RetrievalAugmentedGenerator` combine une recherche sémantique dans Chroma avec un appel au modèle Mistral (hébergé sur Hugging Face Inference) pour générer des réponses contextualisées.
 - **API** : FastAPI expose `/search` et `/health`, orchestrés par `uvicorn` via `scripts/run_api.py`.
 
 ```
-Collecteurs async -> Normalisation -> PostgreSQL -> Chroma -> RAG (Mistral) -> API
+Collecteurs async -> Normalisation -> MySQL -> Chroma -> RAG (Mistral) -> API
 ```
 
 ## Prérequis
 
 - Python 3.10+
-- PostgreSQL 14+ (ou service compatible `postgresql+psycopg`)
+- MySQL 8.0+ (ou service compatible `mysql+pymysql`)
 - Compte Hugging Face avec accès au modèle `mistralai/Mistral-7B-Instruct-v0.3`
 - (Facultatif) GPU pour accélérer l'encodage ou un endpoint d'inférence externe pour Mistral
 
 Variables d'environnement recommandées (`.env` à placer à la racine) :
 
 ```
-POSTGRES_DSN=postgresql+psycopg://immotogo:immotogo@localhost:5432/immotogo
+DATABASE_DSN=mysql+pymysql://immotogo:immotogo@localhost:3306/immotogo
 HF_TOKEN=hf_xxx
 HF_MISTRAL_MODEL=mistralai/Mistral-7B-Instruct-v0.3
 HF_EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
@@ -56,9 +56,9 @@ pip install -r requirements.txt
 Créer la base de données :
 
 ```bash
-createdb immotogo
-psql -d immotogo -c "CREATE USER immotogo WITH PASSWORD 'immotogo';"
-psql -d immotogo -c "GRANT ALL PRIVILEGES ON DATABASE immotogo TO immotogo;"
+mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS immotogo CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+mysql -u root -p -e "CREATE USER IF NOT EXISTS 'immotogo'@'%' IDENTIFIED BY 'immotogo';"
+mysql -u root -p -e "GRANT ALL PRIVILEGES ON immotogo.* TO 'immotogo'@'%'; FLUSH PRIVILEGES;"
 python scripts/bootstrap_db.py
 ```
 
@@ -72,7 +72,7 @@ python scripts/run_ingest.py
 
 Le script :
 - récupère les annonces (limite 200 par collecteur par exécution);
-- alimente PostgreSQL (upsert);
+- alimente MySQL (upsert);
 - génère les chunks et les enregistre dans Chroma.
 
 ### Ajouter un nouveau site
