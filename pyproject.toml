@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "immotogo"
+version = "0.1.0"
+description = "Pipeline RAG immobilier pour le Togo, basé sur Mistral"
+authors = [{ name = "ImmoTogo AI", email = "contact@example.com" }]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pydantic>=2.6",
+    "pydantic-settings>=2.2",
+    "httpx[http2]>=0.27",
+    "beautifulsoup4>=4.12",
+    "selectolax>=0.3",
+    "langchain>=0.2",
+    "langchain-community>=0.2",
+    "langchain-huggingface>=0.0.10",
+    "chromadb>=0.5",
+    "sentence-transformers>=3.0",
+    "torch>=2.2",
+    "transformers>=4.40",
+    "peft>=0.10",
+    "accelerate>=0.29",
+    "sqlalchemy>=2.0",
+    "pymysql>=1.1",
+    "alembic>=1.13",
+    "uvicorn>=0.29",
+    "fastapi>=0.110",
+    "tenacity>=8.3",
+    "orjson>=3.10",
+    "python-dotenv>=1.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.2",
+    "pytest-asyncio>=0.23",
+    "httpx-sse>=0.4",
+    "ruff>=0.4",
+    "mypy>=1.10"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
