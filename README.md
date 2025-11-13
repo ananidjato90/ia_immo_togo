@@ -56,9 +56,9 @@ pip install -r requirements.txt
 Créer la base de données :
 
 ```bash
-mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS immotogo CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-mysql -u root -p -e "CREATE USER IF NOT EXISTS 'immotogo'@'%' IDENTIFIED BY 'immotogo';"
-mysql -u root -p -e "GRANT ALL PRIVILEGES ON immotogo.* TO 'immotogo'@'%'; FLUSH PRIVILEGES;"
+sudo mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS immotogo CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+sudo mysql -u root -p -e "CREATE USER IF NOT EXISTS 'immotogo'@'%' IDENTIFIED BY 'immotogo';"
+sudo mysql -u root -p -e "GRANT ALL PRIVILEGES ON immotogo.* TO 'immotogo'@'%'; FLUSH PRIVILEGES;"
 python scripts/bootstrap_db.py
 ```
 
